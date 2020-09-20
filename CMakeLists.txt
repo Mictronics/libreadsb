@@ -41,6 +41,23 @@ endif()
 ########################################################################
 find_package(PkgConfig)
 
+option(WITH_RTLSDR "Define if you want to enable RTLSDR support." OFF)
+option(WITH_BIASTEE "Define if you want to enable bias tee support on RTLSDR v3 dongles." OFF)
+if (WITH_RTLSDR)
+    find_package(LibRTLSDR REQUIRED)
+endif()
+
+option(WITH_BLADERF "Define if you want to enable BladeRF support." OFF)
+if (WITH_BLADERF)
+    find_package(LibBladeRF REQUIRED)
+endif()
+
+option(WITH_PLUTOSDR "Define if you want to enable ADLAM-PLUTO support." OFF)
+if (WITH_PLUTOSDR)
+    find_package(LibIIO REQUIRED)
+    find_package(LibAD9361 REQUIRED)
+endif()
+
 ########################################################################
 # Setup the include and linker paths
 ########################################################################
@@ -61,10 +78,6 @@ configure_file(
 add_custom_target(uninstall
     ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
 )
-
-########################################################################
-# Install udev rules
-########################################################################
 
 ########################################################################
 # Add subdirectories

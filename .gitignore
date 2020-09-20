@@ -47,3 +47,4 @@ debianize/*.deb
 
 .vscode
 libreadsb.code-workspace
+cmake-variants.yaml
