@@ -5,8 +5,13 @@
 extern "C"
 {
 #endif
+#include "readsb_export.h"
 
-    void say_hello();
+    READSB_API void say_hello();
+
+    READSB_API void readsb_init();
+    READSB_API void readsb_open();
+    READSB_API void readsb_close();
 
 #ifdef __cplusplus
 }

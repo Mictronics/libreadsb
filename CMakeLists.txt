@@ -34,6 +34,7 @@ if(CMAKE_COMPILER_IS_GNUCC AND NOT WIN32)
     ADD_DEFINITIONS(-Wdeclaration-after-statement)
     ADD_DEFINITIONS(-Wmissing-declarations)
     ADD_DEFINITIONS(-fno-common)
+    ADD_DEFINITIONS(-fvisibility=hidden)
 endif()
 
 ########################################################################
