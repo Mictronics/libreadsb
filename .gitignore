@@ -32,9 +32,6 @@ Doxyfile
 
 doc/
 
-src/rtl_sdr
-src/rtl_tcp
-
 CMakeCache.txt
 */CMakeFiles
 CMakeFiles
@@ -49,3 +46,4 @@ debianize/*.deb
 .project
 
 .vscode
+*.code-workspace
