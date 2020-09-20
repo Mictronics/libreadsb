@@ -46,4 +46,4 @@ debianize/*.deb
 .project
 
 .vscode
-*.code-workspace
+libreadsb.code-workspace
