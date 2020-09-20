@@ -6,6 +6,7 @@ LIBREADSB_APPEND_SRCS(
     util.c
     fifo.c
     geomag.c
+    crc.c
     libreadsb.c
 )
 

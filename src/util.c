@@ -2,6 +2,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include "readsb_def.h"
 #include "util.h"
 
 uint64_t _messageNow = 0;
