@@ -40,6 +40,10 @@ endif()
 # Find build dependencies
 ########################################################################
 find_package(PkgConfig)
+set(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+find_library(LIBM m REQUIRED)   
+find_library(LIBRT rt REQUIRED)   
 
 option(WITH_RTLSDR "Define if you want to enable RTLSDR support." OFF)
 option(WITH_BIASTEE "Define if you want to enable bias tee support on RTLSDR v3 dongles." OFF)

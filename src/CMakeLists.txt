@@ -49,6 +49,10 @@ set_target_properties(libreadsb_shared PROPERTIES PUBLIC_HEADER ${LIBREADSB_HEAD
 set_target_properties(libreadsb_shared PROPERTIES C_STANDARD 11)
 set_target_properties(libreadsb_shared PROPERTIES C_STANDARD_REQUIRED ON)
 set_target_properties(libreadsb_shared PROPERTIES C_EXTENSIONS ON)
+target_link_libraries(libreadsb_shared ${SDR_LIBRARIES})
+if(LIBM AND LIBRT)
+    target_link_libraries(libreadsb_shared ${LIBM} ${LIBRT})
+endif()
 
 ########################################################################
 # Setup static library variant
@@ -58,6 +62,10 @@ add_library(libreadsb_static STATIC ${libreadsb_srcs})
 set_property(TARGET libreadsb_static APPEND PROPERTY COMPILE_DEFINITIONS "libreadsb_STATIC" )
 # Force same library filename for static and shared variants of the library
 set_target_properties(libreadsb_static PROPERTIES OUTPUT_NAME libreadsb)
+target_link_libraries(libreadsb_static ${SDR_LIBRARIES})
+if(LIBM AND LIBRT)
+    target_link_libraries(libreadsb_static ${LIBM} ${LIBRT})
+endif()
 
 ########################################################################
 # Install built library files & utilities
