@@ -4,6 +4,7 @@ ENDMACRO(LIBREADSB_APPEND_SRCS)
 
 LIBREADSB_APPEND_SRCS(
     util.c
+    fifo.c
     libreadsb.c
 )
 

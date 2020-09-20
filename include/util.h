@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef __UTIL_H
+#define __UTIL_H
 
 #ifdef __cplusplus
 extern "C"
@@ -52,4 +52,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif /* __UTIL_H */
