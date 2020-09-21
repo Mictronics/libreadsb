@@ -142,7 +142,7 @@ unsigned mode_c_to_mode_a(int mode_c)
     return mode_c_to_a_lut[mode_c];
 }
 
-void decode_mode_a_message(struct modesMessage *mm, int ModeA)
+void decode_mode_a_message(modes_message_t *mm, int ModeA)
 {
     mm->source = SOURCE_MODE_AC;
     mm->addrtype = ADDR_MODE_A;

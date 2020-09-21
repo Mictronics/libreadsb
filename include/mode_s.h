@@ -7,6 +7,7 @@ extern "C"
 #endif
 
 #include <assert.h>
+#include "readsb_def.h"
 
     // datafield extraction helpers
 
@@ -80,6 +81,11 @@ extern "C"
             return 0;
         }
     }
+
+    int modes_message_len_by_type(int type);
+    int score_modes_message(unsigned char *msg, int validbits);
+    int decode_modes_message(modes_message_t *mm, unsigned char *msg);
+    void use_modes_message(modes_message_t *mm);
 
 #ifdef __cplusplus
 }

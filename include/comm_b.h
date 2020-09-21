@@ -8,7 +8,7 @@ extern "C"
 
 #include "readsb_def.h"
 
-    void decode_comm_b(struct modesMessage *mm);
+    void decode_comm_b(modes_message_t *mm);
 
 #ifdef __cplusplus
 }

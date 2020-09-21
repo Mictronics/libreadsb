@@ -8,16 +8,16 @@
 #include "mode_s.h"
 #include "comm_b.h"
 
-typedef int (*comm_b_decoder_fn)(struct modesMessage *, bool);
+typedef int (*comm_b_decoder_fn)(modes_message_t *, bool);
 
-static int decode_empty_response(struct modesMessage *mm, bool store);
-static int decode_bds10(struct modesMessage *mm, bool store);
-static int decode_bds17(struct modesMessage *mm, bool store);
-static int decode_bds20(struct modesMessage *mm, bool store);
-static int decode_bds30(struct modesMessage *mm, bool store);
-static int decode_bds40(struct modesMessage *mm, bool store);
-static int decode_bds50(struct modesMessage *mm, bool store);
-static int decode_bds60(struct modesMessage *mm, bool store);
+static int decode_empty_response(modes_message_t *mm, bool store);
+static int decode_bds10(modes_message_t *mm, bool store);
+static int decode_bds17(modes_message_t *mm, bool store);
+static int decode_bds20(modes_message_t *mm, bool store);
+static int decode_bds30(modes_message_t *mm, bool store);
+static int decode_bds40(modes_message_t *mm, bool store);
+static int decode_bds50(modes_message_t *mm, bool store);
+static int decode_bds60(modes_message_t *mm, bool store);
 
 static comm_b_decoder_fn comm_b_decoders[] = {
     &decode_empty_response,
@@ -29,7 +29,7 @@ static comm_b_decoder_fn comm_b_decoders[] = {
     &decode_bds50,
     &decode_bds60};
 
-void decode_comm_b(struct modesMessage *mm)
+void decode_comm_b(modes_message_t *mm)
 {
     mm->commb_format = COMMB_UNKNOWN;
 
@@ -75,7 +75,7 @@ void decode_comm_b(struct modesMessage *mm)
     }
 }
 
-static int decode_empty_response(struct modesMessage *mm, bool store)
+static int decode_empty_response(modes_message_t *mm, bool store)
 {
     for (unsigned i = 0; i < 7; ++i)
     {
@@ -95,7 +95,7 @@ static int decode_empty_response(struct modesMessage *mm, bool store)
 
 // BDS1,0 Datalink capabilities
 
-static int decode_bds10(struct modesMessage *mm, bool store)
+static int decode_bds10(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 
@@ -123,7 +123,7 @@ static int decode_bds10(struct modesMessage *mm, bool store)
 
 // BDS1,7 Common usage GICB capability report
 
-static int decode_bds17(struct modesMessage *mm, bool store)
+static int decode_bds17(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 
@@ -230,7 +230,7 @@ static int decode_bds17(struct modesMessage *mm, bool store)
 
 // BDS2,0 Aircraft identification
 
-static int decode_bds20(struct modesMessage *mm, bool store)
+static int decode_bds20(modes_message_t *mm, bool store)
 {
     char callsign[sizeof(mm->callsign)];
     unsigned char *msg = mm->MB;
@@ -287,7 +287,7 @@ static int decode_bds20(struct modesMessage *mm, bool store)
 
 // BDS3,0 ACAS RA
 
-static int decode_bds30(struct modesMessage *mm, bool store)
+static int decode_bds30(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 
@@ -308,7 +308,7 @@ static int decode_bds30(struct modesMessage *mm, bool store)
 
 // BDS4,0 Selected vertical intention
 
-static int decode_bds40(struct modesMessage *mm, bool store)
+static int decode_bds40(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 
@@ -526,7 +526,7 @@ static int decode_bds40(struct modesMessage *mm, bool store)
 
 // BDS5,0 Track and turn report
 
-static int decode_bds50(struct modesMessage *mm, bool store)
+static int decode_bds50(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 
@@ -736,7 +736,7 @@ static int decode_bds50(struct modesMessage *mm, bool store)
 
 // BDS6,0 Heading and speed report
 
-static int decode_bds60(struct modesMessage *mm, bool store)
+static int decode_bds60(modes_message_t *mm, bool store)
 {
     unsigned char *msg = mm->MB;
 

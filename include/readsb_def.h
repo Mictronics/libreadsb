@@ -186,7 +186,7 @@ extern "C"
         SIL_PER_HOUR = 3
     } sil_type_t;
 
-    struct modesMessage
+    typedef struct
     {
         uint64_t timestampMsg;    // Timestamp of the message (12MHz clock)
         uint64_t sysTimestampMsg; // Timestamp of the message (system time)
@@ -400,7 +400,7 @@ extern "C"
 
             nav_modes_t modes;
         } nav;
-    };
+    } modes_message_t;
 
 #ifdef __cplusplus
 }

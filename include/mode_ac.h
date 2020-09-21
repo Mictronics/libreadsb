@@ -8,7 +8,7 @@ extern "C"
 
 #include "readsb_def.h"
 
-    void decode_mode_a_message(struct modesMessage *mm, int ModeA);
+    void decode_mode_a_message(modes_message_t *mm, int ModeA);
     void mode_ac_init();
     int mode_a_to_mode_c(unsigned int modeA);
     unsigned mode_c_to_mode_a(int modeC);
