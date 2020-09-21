@@ -16,6 +16,7 @@ LIBREADSB_APPEND_SRCS(
     cpr.c
     demod_2400.c
     stats.c
+    track.c
     libreadsb.c
 )
 

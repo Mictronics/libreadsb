@@ -7,6 +7,7 @@ extern "C"
 #endif
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdatomic.h>
 #include <pthread.h>
 #include "stats.h"
@@ -412,12 +413,13 @@ extern "C"
         atomic_int is_exit;        // Exit from the main loop when true
         int beast_fd;              // Local Modes-S Beast handler
         int filter_persistence;    // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
-        double sample_rate;        // actual sample rate in use (in hz)
         int aircraft_history_next;
         int aircraft_history_full;
         int stats_latest_1min;
         int bUserFlags; // Flags relating to the user details
-        int8_t biastee;
+        int biastee;
+        double sample_rate; // actual sample rate in use (in hz)
+        struct aircraft *aircrafts[AIRCRAFTS_BUCKETS];
         struct stats stats_current;
         struct stats stats_alltime;
         struct stats stats_periodic;
