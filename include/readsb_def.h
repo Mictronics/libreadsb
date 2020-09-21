@@ -7,6 +7,9 @@ extern "C"
 #endif
 
 #include <stdint.h>
+#include <stdatomic.h>
+#include <pthread.h>
+#include "stats.h"
 
 #define MODES_DEFAULT_FREQ 1090000000
 #define MODES_RTL_BUFFERS 16                           // Number of RTL buffers
@@ -401,6 +404,34 @@ extern "C"
             nav_modes_t modes;
         } nav;
     } modes_message_t;
+
+    // Library global state
+    typedef struct
+    {
+        unsigned trailing_samples; // extra trailing samples in magnitude buffers
+        atomic_int is_exit;        // Exit from the main loop when true
+        int beast_fd;              // Local Modes-S Beast handler
+        int filter_persistence;    // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
+        double sample_rate;        // actual sample rate in use (in hz)
+        int aircraft_history_next;
+        int aircraft_history_full;
+        int stats_latest_1min;
+        int bUserFlags; // Flags relating to the user details
+        int8_t biastee;
+        struct stats stats_current;
+        struct stats stats_alltime;
+        struct stats stats_periodic;
+        struct stats stats_1min[15];
+        struct stats stats_5min;
+        struct stats stats_15min;
+        struct range_stats stats_range;
+        struct timespec reader_cpu_accumulator; // accumulated CPU time used by the reader thread
+        struct timespec reader_cpu_start;       // start time for the last reader thread CPU measurement
+        pthread_mutex_t reader_cpu_mutex;       // mutex protecting reader_cpu_accumulator
+        pthread_t reader_thread;
+    } readsb_t;
+
+    extern readsb_t lib_state;
 
 #ifdef __cplusplus
 }
