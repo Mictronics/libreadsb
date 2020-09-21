@@ -11,6 +11,7 @@ LIBREADSB_APPEND_SRCS(
     icao_filter.c
     charset.c
     comm_b.c
+    mode_ac.c
     libreadsb.c
 )
 
