@@ -1167,7 +1167,7 @@ struct aircraft *track_update_from_message(modes_message_t *mm)
         a->signalLevel[a->signalNext] = mm->signalLevel;
         a->signalNext = (a->signalNext + 1) & 7;
     }
-    a->seen = mm->sysTimestampMsg;
+    a->seen_ms = mm->sysTimestampMsg;
     a->messages++;
 
     // update addrtype, we only ever go towards "more direct" types
@@ -1281,22 +1281,22 @@ struct aircraft *track_update_from_message(modes_message_t *mm)
             }
             if (track_data_valid(&a->altitude_baro_valid) && track_data_age(&a->altitude_baro_valid) < 30000)
             {
-                a->alt_baro_reliable = min(
+                a->altitude_baro_reliable = min(
                     ALTITUDE_BARO_RELIABLE_MAX - (ALTITUDE_BARO_RELIABLE_MAX * track_data_age(&a->altitude_baro_valid) / 30000),
-                    a->alt_baro_reliable);
+                    a->altitude_baro_reliable);
             }
             else
             {
-                a->alt_baro_reliable = 0;
+                a->altitude_baro_reliable = 0;
             }
         }
         int good_crc = (mm->crc == 0 && mm->source != SOURCE_MLAT) ? (ALTITUDE_BARO_RELIABLE_MAX / 2 - 1) : 0;
 
-        if (a->alt_baro_reliable <= 0 || abs(delta) < 300 || (fpm < max_fpm && fpm > min_fpm) || (good_crc && a->alt_baro_reliable <= (ALTITUDE_BARO_RELIABLE_MAX / 2 + 2)))
+        if (a->altitude_baro_reliable <= 0 || abs(delta) < 300 || (fpm < max_fpm && fpm > min_fpm) || (good_crc && a->altitude_baro_reliable <= (ALTITUDE_BARO_RELIABLE_MAX / 2 + 2)))
         {
             if (accept_data(&a->altitude_baro_valid, mm->source, mm, 1))
             {
-                a->alt_baro_reliable = min(ALTITUDE_BARO_RELIABLE_MAX, a->alt_baro_reliable + (good_crc + 1));
+                a->altitude_baro_reliable = min(ALTITUDE_BARO_RELIABLE_MAX, a->altitude_baro_reliable + (good_crc + 1));
                 /*if (abs(delta) > 2000 && delta != alt) {
                     fprintf(stderr, "Alt change B: %06x: %d   %d -> %d, min %.1f kfpm, max %.1f kfpm, actual %.1f kfpm\n",
                         a->addr, a->altitude_baro_reliable, a->altitude_baro, alt, min_fpm/1000.0, max_fpm/1000.0, fpm/1000.0);
@@ -1306,13 +1306,13 @@ struct aircraft *track_update_from_message(modes_message_t *mm)
         }
         else
         {
-            a->alt_baro_reliable = a->alt_baro_reliable - (good_crc + 1);
+            a->altitude_baro_reliable = a->altitude_baro_reliable - (good_crc + 1);
             //fprintf(stderr, "Alt check F: %06x: %d   %d -> %d, min %.1f kfpm, max %.1f kfpm, actual %.1f kfpm\n",
             //        a->addr, a->altitude_baro_reliable, a->altitude_baro, alt, min_fpm/1000.0, max_fpm/1000.0, fpm/1000.0);
-            if (a->alt_baro_reliable <= 0)
+            if (a->altitude_baro_reliable <= 0)
             {
                 //fprintf(stderr, "Altitude INVALIDATED: %06x\n", a->addr);
-                a->alt_baro_reliable = 0;
+                a->altitude_baro_reliable = 0;
                 a->altitude_baro_valid.source = SOURCE_INVALID;
             }
         }
@@ -1454,7 +1454,7 @@ struct aircraft *track_update_from_message(modes_message_t *mm)
 
     if (mm->callsign_valid && accept_data(&a->callsign_valid, mm->source, mm, 0))
     {
-        memcpy(a->callsign, mm->callsign, sizeof(a->callsign));
+        memcpy(a->flight_id, mm->callsign, sizeof(a->flight_id));
     }
 
     if (mm->nav.mcp_altitude_valid && accept_data(&a->nav_altitude_mcp_valid, mm->source, mm, 0))
@@ -1592,7 +1592,7 @@ struct aircraft *track_update_from_message(modes_message_t *mm)
     // Now handle derived data
 
     // derive geometric altitude if we have baro + delta
-    if (a->alt_baro_reliable >= 3 && compare_validity(&a->altitude_baro_valid, &a->altitude_geom_valid) > 0 &&
+    if (a->altitude_baro_reliable >= 3 && compare_validity(&a->altitude_baro_valid, &a->altitude_geom_valid) > 0 &&
         compare_validity(&a->geom_delta_valid, &a->altitude_geom_valid) > 0)
     {
         // Baro and delta are both more recent than geometric, derive geometric from baro + delta
@@ -1644,7 +1644,7 @@ static void track_match_ac(uint64_t now)
     {
         for (struct aircraft *a = lib_state.aircrafts[j]; a; a = a->next)
         {
-            if ((now - a->seen) > 5000)
+            if ((now - a->seen_ms) > 5000)
             {
                 continue;
             }
@@ -1738,8 +1738,8 @@ static void track_remove_stale_aircraft(uint64_t now)
 
         while (a)
         {
-            if ((now - a->seen) > TRACK_AIRCRAFT_TTL ||
-                (a->messages == 1 && (now - a->seen) > TRACK_AIRCRAFT_ONEHIT_TTL))
+            if ((now - a->seen_ms) > TRACK_AIRCRAFT_TTL ||
+                (a->messages == 1 && (now - a->seen_ms) > TRACK_AIRCRAFT_ONEHIT_TTL))
             {
                 // Count aircraft where we saw only one message before reaping them.
                 // These are likely to be due to messages with bad addresses.
@@ -1815,7 +1815,7 @@ static void track_remove_stale_aircraft(uint64_t now)
                 }
 
                 if (a->altitude_baro_valid.source == SOURCE_INVALID)
-                    a->alt_baro_reliable = 0;
+                    a->altitude_baro_reliable = 0;
 
                 prev = a;
                 a = a->next;
