@@ -8,6 +8,7 @@ LIBREADSB_APPEND_SRCS(
     geomag.c
     crc.c
     convert.c
+    icao_filter.c
     libreadsb.c
 )
 
