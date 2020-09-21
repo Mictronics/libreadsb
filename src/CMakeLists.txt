@@ -12,7 +12,10 @@ LIBREADSB_APPEND_SRCS(
     charset.c
     comm_b.c
     mode_ac.c
+    mode_s.c
     cpr.c
+    demod_2400.c
+    stats.c
     libreadsb.c
 )
 
