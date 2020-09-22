@@ -226,17 +226,17 @@ static uint32_t update_polar_range(double lat, double lon)
     if (!valid_latlon)
         return 0;
 
-    range = greatcircle(lib_state.latitude, lib_state.longitude, lat, lon);
+    range = greatcircle(lib_state.config.latitude, lib_state.config.longitude, lat, lon);
 
-    if ((range <= lib_state.maxRange || lib_state.maxRange == 0) && range > lib_state.stats_current.longest_distance)
+    if ((range <= lib_state.config.max_range || lib_state.config.max_range == 0) && range > lib_state.stats_current.longest_distance)
     {
         lib_state.stats_current.longest_distance = range;
     }
 
-    if (lib_state.stats_polar_range)
+    if (lib_state.config.stats_polar_range)
     {
         // Round bearing to polarplot resolution.
-        int bucket = round(get_bearing(lib_state.latitude, lib_state.longitude, lat, lon) / POLAR_RANGE_RESOLUTION);
+        int bucket = round(get_bearing(lib_state.config.latitude, lib_state.config.longitude, lat, lon) / POLAR_RANGE_RESOLUTION);
         // Catch and avoid out of bounds writes
         if (bucket >= POLAR_RANGE_BUCKETS)
         {
@@ -350,8 +350,8 @@ static int do_global_cpr(struct aircraft *a, modes_message_t *mm, double *lat, d
         }
         else if (lib_state.bUserFlags & MODES_USER_LATLON_VALID)
         {
-            reflat = lib_state.latitude;
-            reflon = lib_state.longitude;
+            reflat = lib_state.config.latitude;
+            reflon = lib_state.config.longitude;
         }
         else
         {
@@ -387,10 +387,10 @@ static int do_global_cpr(struct aircraft *a, modes_message_t *mm, double *lat, d
     }
 
     // check max range
-    if (lib_state.maxRange > 0 && (lib_state.bUserFlags & MODES_USER_LATLON_VALID))
+    if (lib_state.config.max_range > 0 && (lib_state.bUserFlags & MODES_USER_LATLON_VALID))
     {
-        double range = greatcircle(lib_state.latitude, lib_state.longitude, *lat, *lon);
-        if (range > lib_state.maxRange)
+        double range = greatcircle(lib_state.config.latitude, lib_state.config.longitude, *lat, *lon);
+        if (range > lib_state.config.max_range)
         {
 #ifdef DEBUG_CPR_CHECKS
             fprintf(stderr, "Global range check failed: %06x: %.3f,%.3f, max range %.1fkm, actual %.1fkm\n",
@@ -462,8 +462,8 @@ static int do_local_cpr(struct aircraft *a, modes_message_t *mm, double *lat, do
     }
     else if (!surface && (lib_state.bUserFlags & MODES_USER_LATLON_VALID))
     {
-        reflat = lib_state.latitude;
-        reflon = lib_state.longitude;
+        reflat = lib_state.config.latitude;
+        reflon = lib_state.config.longitude;
 
         // The cell size is at least 360NM, giving a nominal
         // max range of 180NM (half a cell).
@@ -474,17 +474,17 @@ static int do_local_cpr(struct aircraft *a, modes_message_t *mm, double *lat, do
         // at 200NM distance, this may resolve to a position
         // at (200-360) = 160NM in the wrong direction)
 
-        if (lib_state.maxRange == 0)
+        if (lib_state.config.max_range == 0)
         {
             return (-1); // Can't do receiver-centered checks at all
         }
-        else if (lib_state.maxRange <= 1852 * 180)
+        else if (lib_state.config.max_range <= 1852 * 180)
         {
-            range_limit = lib_state.maxRange;
+            range_limit = lib_state.config.max_range;
         }
-        else if (lib_state.maxRange < 1852 * 360)
+        else if (lib_state.config.max_range < 1852 * 360)
         {
-            range_limit = (1852 * 360) - lib_state.maxRange;
+            range_limit = (1852 * 360) - lib_state.config.max_range;
         }
         else
         {
@@ -1838,7 +1838,7 @@ void track_periodic_update()
     {
         next_update = now + 1000;
         track_remove_stale_aircraft(now);
-        if (lib_state.mode_ac)
+        if (lib_state.config.mode_ac)
         {
             track_match_ac(now);
         }

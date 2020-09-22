@@ -411,13 +411,11 @@ extern "C"
     {
         unsigned trailing_samples; // extra trailing samples in magnitude buffers
         atomic_int is_exit;        // Exit from the main loop when true
-        int beast_fd;              // Local Modes-S Beast handler
         int filter_persistence;    // Maximum number of consecutive implausible positions from global CPR to invalidate a known position.
         int aircraft_history_next;
         int aircraft_history_full;
         int stats_latest_1min;
-        int bUserFlags; // Flags relating to the user details
-        int biastee;
+        int bUserFlags;     // Flags relating to the user details
         double sample_rate; // actual sample rate in use (in hz)
         struct aircraft *aircrafts[AIRCRAFTS_BUCKETS];
         struct stats stats_current;
@@ -431,6 +429,22 @@ extern "C"
         struct timespec reader_cpu_start;       // start time for the last reader thread CPU measurement
         pthread_mutex_t reader_cpu_mutex;       // mutex protecting reader_cpu_accumulator
         pthread_t reader_thread;
+
+        struct
+        {
+            unsigned freq;              // Receiver frequency we are listen on
+            unsigned dc_filter;         // Should we apply a DC filter?
+            unsigned nfix_crc;          // Number of crc bit error(s) to correct
+            unsigned check_crc;         // Only display messages with good CRC
+            unsigned mode_ac;           // Enable decoding of SSR Modes A & C
+            unsigned metric;            // Use metric units
+            unsigned use_gnss;          // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
+            unsigned max_range;         // Maximum decoding range in meters
+            unsigned stats_polar_range; // Collect/show a range histogram?
+            int altitude;               // Receiver altitude.
+            double latitude;            // Receiver location latitude.
+            double longitude;           // Receiver location longitude.
+        } config;
     } readsb_t;
 
     extern readsb_t lib_state;
