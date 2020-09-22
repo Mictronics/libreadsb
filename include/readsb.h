@@ -5,7 +5,15 @@
 extern "C"
 {
 #endif
+#include <stdint.h>
+#include <stddef.h>
 #include "readsb_export.h"
+
+    enum error_no
+    {
+        ERR_SUCCESS = 0,
+        ERR_FAILURE,
+    };
 
     enum sdr_type
     {
@@ -21,18 +29,14 @@ extern "C"
     /* Library configuration */
     typedef struct
     {
-        unsigned freq;              // Receiver frequency we are listen on
-        unsigned dc_filter;         // Should we apply a DC filter?
-        unsigned nfix_crc;          // Number of crc bit error(s) to correct
-        unsigned check_crc;         // Only display messages with good CRC
-        unsigned mode_ac;           // Enable decoding of SSR Modes A & C
-        unsigned metric;            // Use metric units
-        unsigned use_gnss;          // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
-        unsigned max_range;         // Maximum decoding range in meters
-        unsigned stats_polar_range; // Collect/show a range histogram?
-        int altitude;               // Receiver altitude.
-        double latitude;            // Receiver location latitude.
-        double longitude;           // Receiver location longitude.
+        uint32_t freq;      // Receiver frequency we are listen on
+        uint32_t max_range; // Maximum decoding range in meters
+        uint32_t altitude;  // Receiver altitude.
+        double latitude;    // Receiver location latitude.
+        double longitude;   // Receiver location longitude.
+        uint8_t nfix_crc;   // Number of crc bit error(s) to correct
+        uint8_t mode_ac;    // Enable decoding of SSR Modes A & C
+        uint8_t dc_filter;  // Should we apply a DC filter?
     } readsb_config_t;
 
     /* RTL-SDR device configuration */
@@ -74,11 +78,9 @@ extern "C"
         int crc;
     } readsb_beastgns_config_t;
 
-    READSB_API void say_hello();
-
-    READSB_API int readsb_init(readsb_config_t *lib_config);
-    READSB_API int readsb_open(enum sdr_type sdr_type, void *sdr_config);
-    READSB_API int readsb_close();
+    READSB_API enum error_no readsb_init(readsb_config_t *config);
+    READSB_API enum error_no readsb_open(enum sdr_type sdr_type, void *config);
+    READSB_API void readsb_close();
     READSB_API unsigned readsb_get_aircraft_count();
     READSB_API void *readsb_get_aircraft_by_address(unsigned addr);
 

@@ -7,7 +7,7 @@ extern "C"
 #endif
 
 #include <stdint.h>
-#include <stdbool.h>
+#include <stddef.h>
 #include <stdatomic.h>
 #include <pthread.h>
 #include "stats.h"
@@ -126,18 +126,6 @@ extern "C"
         NAV_ALT_MCP,
         NAV_ALT_FMS
     } nav_altitude_source_t;
-
-    typedef enum
-    {
-        SDR_NONE = 0,
-        SDR_IFILE,
-        SDR_RTLSDR,
-        SDR_BLADERF,
-        SDR_MICROBLADERF,
-        SDR_MODESBEAST,
-        SDR_PLUTOSDR,
-        SDR_GNS
-    } sdr_type_t;
 
     /*
      * Type of underlying message, one of:
@@ -432,18 +420,14 @@ extern "C"
 
         struct
         {
-            unsigned freq;              // Receiver frequency we are listen on
-            unsigned dc_filter;         // Should we apply a DC filter?
-            unsigned nfix_crc;          // Number of crc bit error(s) to correct
-            unsigned check_crc;         // Only display messages with good CRC
-            unsigned mode_ac;           // Enable decoding of SSR Modes A & C
-            unsigned metric;            // Use metric units
-            unsigned use_gnss;          // Use GNSS altitudes with H suffix ("HAE", though it isn't always) when available
-            unsigned max_range;         // Maximum decoding range in meters
-            unsigned stats_polar_range; // Collect/show a range histogram?
-            int altitude;               // Receiver altitude.
-            double latitude;            // Receiver location latitude.
-            double longitude;           // Receiver location longitude.
+            uint32_t freq;      // Receiver frequency we are listen on
+            uint32_t max_range; // Maximum decoding range in meters
+            uint32_t altitude;  // Receiver altitude.
+            double latitude;    // Receiver location latitude.
+            double longitude;   // Receiver location longitude.
+            uint8_t nfix_crc;   // Number of crc bit error(s) to correct
+            uint8_t mode_ac;    // Enable decoding of SSR Modes A & C
+            uint8_t dc_filter;  // Should we apply a DC filter?
         } config;
     } readsb_t;
 
