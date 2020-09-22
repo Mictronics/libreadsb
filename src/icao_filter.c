@@ -59,7 +59,7 @@ void icao_filter_add(uint32_t addr)
         h = (h + 1) & (ICAO_FILTER_SIZE - 1);
         if (h == h0)
         {
-            fprintf(stderr, "ICAO hash table full, increase ICAO_FILTER_SIZE\n");
+            fprintf(stderr, "libreadsb: ICAO hash table full, increase ICAO_FILTER_SIZE\n");
             return;
         }
     }
@@ -73,7 +73,7 @@ void icao_filter_add(uint32_t addr)
         h = (h + 1) & (ICAO_FILTER_SIZE - 1);
         if (h == h0)
         {
-            fprintf(stderr, "ICAO hash table full, increase ICAO_FILTER_SIZE\n");
+            fprintf(stderr, "libreadsb: ICAO hash table full, increase ICAO_FILTER_SIZE\n");
             return;
         }
     }

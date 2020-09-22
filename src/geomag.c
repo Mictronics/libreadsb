@@ -156,7 +156,7 @@ int geomag_init()
             break;
         if (wmm_obj[i].m > wmm_obj[i].n || wmm_obj[i].m < 0.0)
         {
-            fprintf(stderr, "Corrupt record %d in model wmm_string in geomag.c\n", i);
+            fprintf(stderr, "libreadsb: Corrupt record %d in model wmm_string in geomag.c\n", i);
             return -1;
         }
 
