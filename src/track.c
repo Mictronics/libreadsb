@@ -233,20 +233,17 @@ static uint32_t update_polar_range(double lat, double lon)
         lib_state.stats_current.longest_distance = range;
     }
 
-    if (lib_state.config.stats_polar_range)
+    // Round bearing to polarplot resolution.
+    int bucket = round(get_bearing(lib_state.config.latitude, lib_state.config.longitude, lat, lon) / POLAR_RANGE_RESOLUTION);
+    // Catch and avoid out of bounds writes
+    if (bucket >= POLAR_RANGE_BUCKETS)
     {
-        // Round bearing to polarplot resolution.
-        int bucket = round(get_bearing(lib_state.config.latitude, lib_state.config.longitude, lat, lon) / POLAR_RANGE_RESOLUTION);
-        // Catch and avoid out of bounds writes
-        if (bucket >= POLAR_RANGE_BUCKETS)
-        {
-            bucket = 0;
-        }
+        bucket = 0;
+    }
 
-        if (bucket < POLAR_RANGE_BUCKETS && lib_state.stats_range.polar_range[bucket] < range)
-        {
-            lib_state.stats_range.polar_range[bucket] = (uint32_t)range;
-        }
+    if (bucket < POLAR_RANGE_BUCKETS && lib_state.stats_range.polar_range[bucket] < range)
+    {
+        lib_state.stats_range.polar_range[bucket] = (uint32_t)range;
     }
 
     return (uint32_t)range;
@@ -315,14 +312,6 @@ static int speed_check(struct aircraft *a, double lat, double lon, int surface)
 
     inrange = (distance <= range);
 
-#ifdef DEBUG_CPR_CHECKS
-    if (!inrange)
-    {
-        fprintf(stderr, "Speed check failed: %06x: %.3f,%.3f -> %.3f,%.3f in %.1f seconds, max speed %d kt, range %.1fkm, actual %.1fkm\n",
-                a->addr, a->lat, a->lon, lat, lon, elapsed / 1000.0, speed, range / 1000.0, distance / 1000.0);
-    }
-#endif
-
     return inrange;
 }
 
@@ -376,13 +365,6 @@ static int do_global_cpr(struct aircraft *a, modes_message_t *mm, double *lat, d
 
     if (result < 0)
     {
-#ifdef DEBUG_CPR_CHECKS
-        fprintf(stderr, "CPR: decode failure for %06X (%d).\n", a->addr, result);
-        fprintf(stderr, "  even: %d %d   odd: %d %d  fflag: %s\n",
-                a->cpr_even_lat, a->cpr_even_lon,
-                a->cpr_odd_lat, a->cpr_odd_lon,
-                fflag ? "odd" : "even");
-#endif
         return result;
     }
 
@@ -392,11 +374,6 @@ static int do_global_cpr(struct aircraft *a, modes_message_t *mm, double *lat, d
         double range = greatcircle(lib_state.config.latitude, lib_state.config.longitude, *lat, *lon);
         if (range > lib_state.config.max_range)
         {
-#ifdef DEBUG_CPR_CHECKS
-            fprintf(stderr, "Global range check failed: %06x: %.3f,%.3f, max range %.1fkm, actual %.1fkm\n",
-                    a->addr, *lat, *lon, lib_state.maxRange / 1000.0, range / 1000.0);
-#endif
-
             lib_state.stats_current.cpr_global_range_checks++;
             return (-2); // we consider an out-of-range value to be bad data
         }
@@ -522,9 +499,6 @@ static int do_local_cpr(struct aircraft *a, modes_message_t *mm, double *lat, do
     // check speed limit
     if (track_data_valid(&a->position_valid) && mm->source <= a->position_valid.source && !speed_check(a, *lat, *lon, surface))
     {
-#ifdef DEBUG_CPR_CHECKS
-        fprintf(stderr, "Speed check for %06X with local decoding failed\n", a->addr);
-#endif
         lib_state.stats_current.cpr_local_speed_checks++;
         return -1;
     }
@@ -580,9 +554,6 @@ static void update_position(struct aircraft *a, modes_message_t *mm)
 
         if (location_result == -2)
         {
-#ifdef DEBUG_CPR_CHECKS
-            fprintf(stderr, "global CPR failure (invalid) for (%06X).\n", a->addr);
-#endif
             // Global CPR failed because the position produced implausible results.
             // This is bad data.
             // At least one of the CPRs is bad, mark them both invalid.
@@ -606,12 +577,6 @@ static void update_position(struct aircraft *a, modes_message_t *mm)
         }
         else if (location_result == -1)
         {
-#ifdef DEBUG_CPR_CHECKS
-            if (mm->source == SOURCE_MLAT)
-            {
-                fprintf(stderr, "CPR skipped from MLAT (%06X).\n", a->addr);
-            }
-#endif
             // No local reference for surface position available, or the two messages crossed a zone.
             // Nonfatal, try again later.
             lib_state.stats_current.cpr_global_skipped++;
